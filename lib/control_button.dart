@@ -15,6 +15,7 @@ class ControlButton extends StatelessWidget {
         height: 80.0,
         child: FittedBox(
           child: FloatingActionButton(
+            heroTag: null,
             backgroundColor: Colors.green,
             elevation: 0.0,
             child: this.icon,

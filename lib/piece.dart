@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_snake_game/problem.dart';
 import 'dart:math';
@@ -10,7 +12,8 @@ class Piece extends StatefulWidget {
   final Problem problem;
   final Color shadowColor;
   final String gameType;
-  const Piece({Key key, this.posX, this.posY, this.size, this.color = const Color(0XFFBF3105), this.isAnimated = false, this.problem, this.shadowColor, this.gameType}) : super(key: key);
+  final String image;
+  const Piece({Key key, this.posX, this.posY, this.size, this.color = const Color(0XFFBF3105), this.isAnimated = false, this.problem, this.shadowColor, this.gameType, this.image}) : super(key: key);
 
 
 
@@ -35,6 +38,7 @@ class Piece extends StatefulWidget {
 
 class _PieceState extends State<Piece> with SingleTickerProviderStateMixin {
   AnimationController _animationController;
+
 
   @override
   void initState() {
@@ -73,25 +77,30 @@ class _PieceState extends State<Piece> with SingleTickerProviderStateMixin {
           width: widget.size.toDouble(),
           height: widget.size.toDouble(),
           decoration: BoxDecoration(
-            color: widget.color,
-            borderRadius: BorderRadius.all(
-              Radius.circular(
-                widget.size.toDouble(),
-              ),
+            // color: widget.color,
+            // borderRadius: BorderRadius.all(
+            //   Radius.circular(
+            //     widget.size.toDouble(),
+            //   ),
+            // ),
+            // border: Border.all(color: Colors.black, width: 2.0),
+            //   boxShadow: [
+            //     BoxShadow(
+            //       color: widget.shadowColor,
+            //       spreadRadius: 12,
+            //       blurRadius: 15,
+            //       offset: Offset(0, 0),
+            //     )
+            //   ],
+            image: DecorationImage(
+                image: Image.asset(widget.image).image,
+                scale: 0.75
             ),
-            border: Border.all(color: Colors.black, width: 2.0),
-              boxShadow: [
-                BoxShadow(
-                  color: widget.shadowColor,
-                  spreadRadius: 12,
-                  blurRadius: 15,
-                  offset: Offset(0, 0),
-                )
-              ],
           ),
           child: Text("${widget.getSum()}", textAlign: TextAlign.center,softWrap: true,style: TextStyle(
             fontSize: 30,
-            color: Colors.black,
+            color: Color.fromARGB(255, 222, 188, 65),
+            fontFamily: 'TheBite',
           ),),
         ),
       ),

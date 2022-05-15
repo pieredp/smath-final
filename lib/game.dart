@@ -18,9 +18,9 @@ import 'piece.dart';
 
 class GamePage extends StatefulWidget {
   final String type;
-  final int level;
 
-  GamePage(this.type, this.level);
+
+  GamePage(this.type);
 
   @override
   _GamePageState createState() => _GamePageState();
@@ -55,8 +55,7 @@ class _GamePageState extends State<GamePage> {
   SoundManager _soundManager = SoundManager();
   AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
 
-
-  void draw() async {
+  void draw()  {
     if (positions.length == 0) {
       positions.add(getRandomPositionWithinRange());
     }
@@ -68,7 +67,7 @@ class _GamePageState extends State<GamePage> {
     for (int i = positions.length - 1; i > 0; i--) {
       positions[i] = positions[i - 1];
     }
-    positions[0] = await getNextPosition(positions[0]);
+    positions[0] = getNextPosition(positions[0]);
   }
 
   Direction getRandomDirection([DirectionType type]) {
@@ -178,13 +177,13 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
-  Future<Offset> getNextPosition(Offset position) async {
+  Offset getNextPosition(Offset position) {
     Offset nextPosition;
 
     if (detectCollision(position) == true) {
       _soundManager.stopBackgroundMusic();
       if (timer != null && timer.isActive) timer.cancel();
-      await Future.delayed(Duration(milliseconds: 500), () => showGameOverDialog());
+      Future.delayed(Duration(milliseconds: 500), () => showGameOverDialog());
       return position;
     }
 
@@ -207,7 +206,7 @@ class _GamePageState extends State<GamePage> {
     List<Problem> tempProblems = [];
 
     for (int i = 0; i < foodsPosition.length; i++) {
-      tempProblems.add(Problem(widget.type).generateProblem(widget.level));
+      tempProblems.add(Problem(widget.type).generateProblem());
     }
     return tempProblems;
   }
@@ -251,6 +250,7 @@ class _GamePageState extends State<GamePage> {
           }
           score = score + 1;
           changeSpeed();
+          draw();
         }
        else{
          _soundManager.playWrongAnswerSound();
@@ -272,10 +272,11 @@ class _GamePageState extends State<GamePage> {
         posY: foodsPosition[i].dy.toInt(),
         size: step,
         color: shadowColor == null ? Colors.purple:shadowColor,
-        isAnimated: true,
+        // isAnimated: true,
         problem: problems[i],
         shadowColor: shadowColor == null ? Colors.purple:shadowColor,
         gameType: widget.type,
+        image: 'images/apple.png'
       )
       );
     }
@@ -287,7 +288,7 @@ class _GamePageState extends State<GamePage> {
     draw();
     drawFood();
 
-    for (int i = 0; i < length; ++i) {
+    for (int i = 0; i < length; i++) {
       if (i >= positions.length) {
         continue;
       }
@@ -300,6 +301,7 @@ class _GamePageState extends State<GamePage> {
           color: prevFoodColor,
           shadowColor: prevFoodColor,
           gameType: widget.type,
+          image: getSnakePiece(i)
         ),
       );
     }
@@ -477,6 +479,77 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
+  String getSnakePiece(int i) {
+    // head
+    if (i == 0) {
+      if (direction == Direction.right) {
+        return 'images/snake-pieces/head-right.png';
+      }
+      else if (direction == Direction.left) {
+        return 'images/snake-pieces/head-left.png';
+      }
+      else if (direction == Direction.up) {
+        return 'images/snake-pieces/head-top.png';
+      }
+      else if (direction == Direction.down) {
+        return 'images/snake-pieces/head-bottom.png';
+      }
+    }
+    // tail
+    else if (i == length - 1) {
+      if (positions[i].dx > positions[i - 1].dx) {
+        return 'images/snake-pieces/tail-left.png';
+      }
+      if (positions[i].dx < positions[i - 1].dx) {
+        return 'images/snake-pieces/tail-right.png';
+      }
+      if (positions[i].dy > positions[i - 1].dy) {
+        return 'images/snake-pieces/tail-top.png';
+      }
+      if (positions[i].dy < positions[i - 1].dy) {
+        return 'images/snake-pieces/tail-bottom.png';
+      }
+    }
+    // corner piece
+    else if ((positions[i].dy > positions[i - 1].dy &&
+             positions[i].dx > positions[i + 1].dx) ||
+            (positions[i].dx > positions[i - 1].dx &&
+              positions[i].dy > positions[i + 1].dy)) {
+      return 'images/snake-pieces/left-top.png';
+    }
+    else if ((positions[i].dy > positions[i - 1].dy &&
+             positions[i].dx < positions[i + 1].dx) ||
+            (positions[i].dx < positions[i - 1].dx &&
+                positions[i].dy > positions[i + 1].dy)) {
+      return 'images/snake-pieces/right-top.png';
+    }
+    else if ((positions[i].dy < positions[i - 1].dy &&
+        positions[i].dx < positions[i + 1].dx) ||
+        (positions[i].dx < positions[i - 1].dx &&
+            positions[i].dy < positions[i + 1].dy)) {
+      return 'images/snake-pieces/right-bottom.png';
+    }
+    else if ((positions[i].dy < positions[i - 1].dy &&
+        positions[i].dx > positions[i + 1].dx) ||
+        (positions[i].dx > positions[i - 1].dx &&
+            positions[i].dy < positions[i + 1].dy)) {
+      return 'images/snake-pieces/left-bottom.png';
+    }
+    // else if (positions[index].dx > positions[index - 1].dx &&
+    //     positions[index].dy > positions[index + 1].dy) {
+    //   return 'images/snake-pieces/left-top.png';
+    // }
+    // straight piece
+    else {
+      if (positions[i].dy == positions[i - 1].dy) {
+        return 'images/snake-pieces/left-right.png';
+      }
+      else if (positions[i].dx == positions[i - 1].dx) {
+        return 'images/snake-pieces/top-bottom.png';
+      }
+    }
+
+  }
   @override
   Widget build(BuildContext context) {
     screenWidth = MediaQuery.of(context).size.width;
@@ -509,7 +582,7 @@ class _GamePageState extends State<GamePage> {
             getControls(),
             getScore(),
             getProblem(),
-            getKeyboardControls(context),
+            getKeyboardControls(context)
           ],
         ),
       ),

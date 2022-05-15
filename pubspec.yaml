@@ -23,7 +23,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  spritewidget:
 
 
 
@@ -48,11 +48,16 @@ flutter:
   assets:
     - assets/images/
     - assets/sounds/
+    - assets/images/snake-pieces/
+
   fonts:
     - family: SnakeFont
       fonts:
         - asset: assets/fonts/SnakeChan-MMoJ.ttf
         - asset: assets/fonts/SnakeChan-YdV8.ttf
+    - family: TheBite
+      fonts:
+        - asset: assets/fonts/TheBite.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
