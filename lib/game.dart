@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_snake_game/main_menu.dart';
 import 'package:flutter_snake_game/problem.dart';
 import 'package:flutter_snake_game/sound_manager.dart';
+import 'package:confetti/confetti.dart';
 
 
 import 'control_panel.dart';
@@ -32,6 +33,7 @@ class _GamePageState extends State<GamePage> {
   int length = 10;
   int step = 40;
   Direction direction = Direction.right;
+  ConfettiController _controllerConfetti;
 
   List<Piece> foods = [];
   List<Offset> foodsPosition = [];
@@ -244,6 +246,7 @@ class _GamePageState extends State<GamePage> {
       if (foodsPosition[i] == positions[0]) {
         if(isAnswerCorrect(foods[i])){
           _soundManager.playCorrectAnswerSound();
+          _controllerConfetti.play();
           prevFoodColor = foods[i].color;
           shadowColor = getShadowColor();
           changeColor = true;
@@ -458,6 +461,8 @@ class _GamePageState extends State<GamePage> {
   void initState() {
     super.initState();
     _soundManager.playBackgroundMusic();
+    _controllerConfetti =
+        ConfettiController(duration: const Duration(seconds: 1));
     restart();
   }
 
@@ -583,6 +588,8 @@ class _GamePageState extends State<GamePage> {
             foods[0],
             foods[1],
             foods[2],
+            confetti(Alignment.centerRight, pi),
+            confetti(Alignment.centerLeft ,0),
             getControls(),
             getScore(),
             getProblem(),
@@ -592,4 +599,62 @@ class _GamePageState extends State<GamePage> {
       ),
     );
   }
+  
+  @override
+  void dispose() {
+    _controllerConfetti.dispose();
+    super.dispose();
+  }
+
+  Widget confetti(Alignment alignment, double direction) {
+    return Align(
+      alignment: alignment,
+      child: ConfettiWidget(
+        confettiController: _controllerConfetti,
+        blastDirection: direction, // radial value - LEFT
+        particleDrag: 0.05, // apply drag to the confetti
+        emissionFrequency: 0.05, // how often it should emit
+        numberOfParticles: 20, // number of particles to emit
+        gravity: 0.05, // gravity - or fall speed
+        shouldLoop: false,
+        colors: const [
+          Colors.yellowAccent,
+          Colors.blue,
+          Colors.pink,
+          Colors.orange,
+          Colors.purple
+        ],
+        createParticlePath: drawStar,// manually specify the colors to be used
+        //strokeWidth: 1,
+        //strokeColor: Colors.white,
+      ),
+    );
+  }
+
+
+  /// A custom Path to paint stars.
+  Path drawStar(Size size) {
+    // Method to convert degree to radians
+    double degToRad(double deg) => deg * (pi / 180.0);
+
+    const numberOfPoints = 5;
+    final halfWidth = size.width / 2;
+    final externalRadius = halfWidth;
+    final internalRadius = halfWidth / 2.5;
+    final degreesPerStep = degToRad(360 / numberOfPoints);
+    final halfDegreesPerStep = degreesPerStep / 2;
+    final path = Path();
+    final fullAngle = degToRad(360);
+    path.moveTo(size.width, halfWidth);
+
+    for (double step = 0; step < fullAngle; step += degreesPerStep) {
+      path.lineTo(halfWidth + externalRadius * cos(step),
+          halfWidth + externalRadius * sin(step));
+      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep),
+          halfWidth + internalRadius * sin(step + halfDegreesPerStep));
+    }
+    path.close();
+    return path;
+  }
+  
 }
