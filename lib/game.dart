@@ -55,6 +55,8 @@ class _GamePageState extends State<GamePage> {
   SoundManager _soundManager = SoundManager();
   AudioPlayer audioPlayer = AudioPlayer(mode: PlayerMode.LOW_LATENCY);
 
+  bool isGameOver = false;
+
   void draw()  {
     if (positions.length == 0) {
       positions.add(getRandomPositionWithinRange());
@@ -184,6 +186,7 @@ class _GamePageState extends State<GamePage> {
       _soundManager.stopBackgroundMusic();
       if (timer != null && timer.isActive) timer.cancel();
       Future.delayed(Duration(milliseconds: 500), () => showGameOverDialog());
+      isGameOver = true;
       return position;
     }
 
@@ -429,6 +432,7 @@ class _GamePageState extends State<GamePage> {
     direction = getRandomDirection();
     speed = 1;
     changeSpeed();
+    isGameOver = false;
   }
 
   Widget getPlayAreaBorder() {
@@ -480,6 +484,9 @@ class _GamePageState extends State<GamePage> {
   }
 
   String getSnakePiece(int i) {
+    if (isGameOver) {
+      return '';
+    }
     // head
     if (i == 0) {
       if (direction == Direction.right) {
@@ -535,10 +542,6 @@ class _GamePageState extends State<GamePage> {
             positions[i].dy < positions[i + 1].dy)) {
       return 'images/snake-pieces/left-bottom.png';
     }
-    // else if (positions[index].dx > positions[index - 1].dx &&
-    //     positions[index].dy > positions[index + 1].dy) {
-    //   return 'images/snake-pieces/left-top.png';
-    // }
     // straight piece
     else {
       if (positions[i].dy == positions[i - 1].dy) {
@@ -549,6 +552,7 @@ class _GamePageState extends State<GamePage> {
       }
     }
 
+    return '';
   }
   @override
   Widget build(BuildContext context) {
