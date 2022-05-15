@@ -18,9 +18,9 @@ import 'piece.dart';
 
 class GamePage extends StatefulWidget {
   final String type;
+  final int level;
 
-
-  GamePage(this.type);
+  GamePage(this.type, this.level);
 
   @override
   _GamePageState createState() => _GamePageState();
@@ -207,7 +207,7 @@ class _GamePageState extends State<GamePage> {
     List<Problem> tempProblems = [];
 
     for (int i = 0; i < foodsPosition.length; i++) {
-      tempProblems.add(Problem(widget.type).generateProblem());
+      tempProblems.add(Problem(widget.type).generateProblem(widget.level));
     }
     return tempProblems;
   }

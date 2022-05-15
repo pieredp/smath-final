@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'game.dart';
+import 'level_menu.dart';
 
 class MainMenu extends StatelessWidget {
 
@@ -47,7 +48,7 @@ class MainMenu extends StatelessWidget {
                   // SelectSpaceship(), so that player can select a spaceship.
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => GamePage('add'),
+                      builder: (context) => LevelMenu('add'),
                     ),
                   );
                 },
@@ -65,7 +66,7 @@ class MainMenu extends StatelessWidget {
                   // SelectSpaceship(), so that player can select a spaceship.
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (context) => GamePage('mult'),
+                      builder: (context) => LevelMenu('mult'),
                     ),
                   );
                 },
